@@ -12,7 +12,7 @@ void InitArray(int arr[], const int size, int i)
 {
 	if (i < size)
 	{
-		arr[i] = -100 + rand() % 201;
+		arr[i] = -10 + rand() % 21;
 		InitArray(arr, size, i + 1);
 		return;
 	}
@@ -45,51 +45,50 @@ int CountElementArray(const int const arr[], const int size, const int A, const 
 	else return 0;
 }
 
-int IndexMax(const int const arr[], const int size, const int A, const int B, int i, int m = numeric_limits<int>::min())
-{
-	if (arr[i] > m && arr[i] >= A && arr[i] <= B)
-	{
-		m = arr[i];
-		return i;
-	}
-	if (i < size-1)
-		return IndexMax(arr, size, A, B, i + 1, m);
-	else return -1;
-}
-
-int SumElementArray(const int const arr[], const int size, const int A, const int B, int i)
+void IndexMax(const int* arr, int size, int& max, int& index, int i)
 {
 	if (i < size)
 	{
-		return arr[i] + SumElementArray(arr, size, A, B, i + 1);
+		if (arr[i] > max) {
+			index = i;
+			max = arr[i];
+		}
+		IndexMax(arr, size, max, index, i + 1);
+		return;
+	}
+}
+
+int SumElementArray(const int const arr[], const int size, int index)
+{
+	if (index < size)
+	{
+		return arr[index] + SumElementArray(arr, size, index+1);
 	}
 	else return 0;
 }
 
-int Max(const int const arr[], int size, int& index, int i)
+void FindIndexMin(int arr[], int size, int& min, int& index, int i)
 {
-	index = 0;
 	if (i < size)
 	{
-		if (abs(arr[i]) > abs(Max(arr, size, index, i + 1))) 
-		{
+		if (abs(arr[i]) > abs(min)) {
 			index = i;
-			return arr[i];
+			min = arr[i];
+			FindIndexMin(arr, size, min, index, i + 1);
 		}
 		else
-			return Max(arr, size, index, i + 1);
+			return FindIndexMin(arr, size, min, index, i + 1);
 	}
-	else return numeric_limits<int>::min();
 }
 
 void SortArray(int arr[], const int size, int i)
 {
 	if (i < size)
 	{
-		int index;
-		int m = Max(arr, size, index, i);
+		int index = i, min = arr[i];
+		FindIndexMin(arr, size, min, index, i);
 		arr[index] = arr[i];
-		arr[i] = m;
+		arr[i] = min;
 		SortArray(arr, size, i + 1);
 		return;
 	}
@@ -107,13 +106,16 @@ int main()
 	cout << "A = "; cin >> A;
 	cout << "B = "; cin >> B;
 	int* arr = new int[n];
-
 	InitArray(arr, n, 0);
+
 	PrintArray(arr, n, 0);
 	cout << "Кількість елементів масиву, що лежать в діапазоні від [" << A << " до " << B << "] = "
 		<< CountElementArray(arr, n, A, B, 0) << endl;
-	cout << "Суму елементів масиву, розташованих після максимального елементу [" << arr[IndexMax(arr, n, A, B, 0)] << "] = "
-		<< SumElementArray(arr, n, A, B, IndexMax(arr, n, A, B, 0) + 1) << endl;
+	int index, max;
+	IndexMax(arr, n, max, index, 0);
+	if (index != -1)
+		cout << "Суму елементів масиву, розташованих після максимального елементу [" << index << "] = "
+			<< SumElementArray(arr, n, index+1) << endl;
 	SortArray(arr, n, 0);
 	PrintArray(arr, n, 0);
 

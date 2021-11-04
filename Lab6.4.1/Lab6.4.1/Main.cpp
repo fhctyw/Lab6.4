@@ -12,7 +12,7 @@ void InitArray(int arr[], const int size)
 {
 	for (size_t i = 0; i < size; i++)
 	{
-		arr[i] = -100 + rand() % 201;
+		arr[i] = -10 + rand() % 21;
 	}
 }
 
@@ -37,45 +37,54 @@ int CountElementArray(const int const arr[], const int size, const int A, const 
 	return C;
 }
 
-int IndexMax(const int const arr[], const int size, const int A, const int B)
+int IndexMax(int arr[], const int size)
 {
-	for (size_t i = 0; i < size; i++)
-	{
-		if (arr[i] >= A && arr[i] <= B)
-			return i;
-	}
-	return -1;
+	int index = 0;
+	int max = arr[0];
+	for (int i = 0; i < size; i++)
+		if (arr[i] > max)
+		{
+			index = i;
+			max = arr[i];
+		}
+	return index;
 }
 
-int SumElementArray(const int const arr[], const int size, const int A, const int B)
+int SumElementArray(int arr[], const int size)
 {
 	int S = 0;
-	for (size_t i = 1 + IndexMax(arr, size, A, B); i < size; i++)
+	for (size_t i = 1 + IndexMax(arr, size); i < size; i++)
 		S += arr[i];
 	return S;
 }
 
+int FindIndexMin(const int const arr[], const int size, int start)
+{
+	int min = arr[start];
+	int index = start;
+	for (int i = start; i < size; i++)
+	{
+		if (abs(arr[i]) > abs(min)) {
+			min = arr[i];
+			index = i;
+		}
+	}
+	return index;
+}
+
 void SortArray(int arr[], const int size)
 {
-	for (size_t i = 0, index = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 	{
-		int m = numeric_limits<int>::min();
-		for (size_t j = i; j < size; j++)
-		{
-			if (abs(arr[j]) > abs(m)) {
-				m = arr[j];
-				index = j;
-			}
-		}
+		int index = FindIndexMin(arr, size, i);
+		int tmp = arr[index];
 		arr[index] = arr[i];
-		arr[i] = m;
-
+		arr[i] = tmp;
 	}
 }
 
 int main()
 {
-	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
 	srand(time(0));
@@ -89,9 +98,8 @@ int main()
 	PrintArray(arr, n);
 	cout << "Кількість елементів масиву, що лежать в діапазоні від [" << A << " до " << B << "] = "
 		<< CountElementArray(arr, n, A, B) << endl;
-	cout << "Суму елементів масиву, розташованих після максимального елементу [" << arr[IndexMax(arr, n, A, B)] << "] = "
-		<< SumElementArray(arr, n, A, B) << endl;
-
+	cout << "Суму елементів масиву, розташованих після максимального елементу [" << IndexMax(arr, n) << "] = "
+			<< SumElementArray(arr, n) << endl;
 	SortArray(arr, n);
 	PrintArray(arr, n);
 
